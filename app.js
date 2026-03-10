@@ -1,11 +1,21 @@
 const express = require('express');
+const client = require('prom-client'); // Importăm biblioteca
 const app = express();
-const port = 3000;
+
+// Activează colectarea metricilor implicite (CPU, RAM, etc.)
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
 
 app.get('/', (req, res) => {
-  res.send('🚀 Aplicația mea DevOps rulează cu succes pe AWS!');
+  res.send('Hello World!');
 });
 
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+// Endpoint-ul pe care îl caută Prometheus
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server is running on port 3000');
 });

@@ -19,9 +19,18 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~
+            # 1. Oprim absolut tot ce rulează vechi pentru a elibera portul 80
+            sudo docker stop $(sudo docker ps -aq) || true
+            sudo docker rm $(sudo docker ps -aq) || true
+            sudo docker system prune -f
+            
+            # 2. Curățăm folderul și aducem codul nou
             sudo rm -rf ~/app
             mkdir -p ~/app && cd ~/app
             git clone https://github.com/${{ github.repository }}.git .
             
-            # Folosim docker-compose ca să ridicăm tot ecosistemul: App + Prometheus + Grafana
+            # 3. Ne asigurăm că avem docker-compose instalat
+            sudo apt update && sudo apt install docker-compose -y
+            
+            # 4. Pornim noua structură (App + Prometheus + Grafana)
             sudo docker-compose up -d --build

@@ -18,10 +18,20 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
+            # Mergem în home
+            cd ~
+            # Ștergem folderul app cu forța, indiferent ce e în el
+            sudo rm -rf ~/app
+            # Îl creăm de la zero
             mkdir -p ~/app && cd ~/app
-            sudo rm -rf * .git .github
+            
+            # Acum clonăm - nu are cum să mai dea eroare de "already exists"
             git clone https://github.com/${{ github.repository }}.git .
+            
+            # Oprim resturile vechi
             sudo docker stop my-app || true
             sudo docker rm my-app || true
-            sudo docker build -t my-app -f Dockerfile .
+            
+            # Build & Run folosind Dockerfile (cu D mare)
+            sudo docker build -t my-app .
             sudo docker run -d --name my-app -p 80:3000 my-app

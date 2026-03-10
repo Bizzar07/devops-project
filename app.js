@@ -7,7 +7,7 @@ const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics();
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello World! SUNT CEL MAI TAREEEEE');
 });
 
 // Endpoint-ul pe care îl caută Prometheus

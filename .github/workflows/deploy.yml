@@ -17,16 +17,23 @@ jobs:
           host: ${{ secrets.HOST_IP }}
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
-          script: |
+         script: |
+            # Ne asigurăm că folderul există
             mkdir -p ~/app && cd ~/app
-            # Ștergem ce e vechi pentru o instalare curată
-            sudo rm -rf *
-            # Clonăm repo-ul tău (înlocuiește Bizzar07/devops-project cu numele tău real dacă e diferit)
-            git clone https://github.com/Bizzar07/devops-project.git .
-            # Oprim containerul vechi dacă există
+            
+            # Curățăm folderul înainte de clone pentru a evita eroarea "already exists"
+            sudo rm -rf * .git .github
+            
+            # Clonăm din nou curat
+            git clone https://github.com/${{ github.repository }}.git .
+            
+            # Oprim containerele vechi (ignora erorile dacă nu există)
             sudo docker stop my-app || true
             sudo docker rm my-app || true
-            # Construim imaginea folosind fișierul dockerfile (am pus -f pentru a fi siguri)
-            sudo docker build -t my-app -f dockerfile .
-            # Pornim aplicația pe portul 80
+            
+            # Construim imaginea folosind numele corect: Dockerfile
+            sudo docker build -t my-app -f Dockerfile .
+            
+            # Pornim aplicația
             sudo docker run -d --name my-app -p 80:3000 my-app
+          

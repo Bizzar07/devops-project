@@ -8,6 +8,11 @@ services:
       - "80:3000"
     networks:
       - monitoring
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   prometheus:
     image: prom/prometheus
@@ -21,7 +26,7 @@ services:
 
   grafana:
     image: grafana/grafana
-    restart: always # Am adăugat restart și aici pentru siguranță
+    restart: always
     ports:
       - "3001:3000"
     networks:
@@ -33,16 +38,6 @@ services:
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - monitoring
-
-  promtail:
-    image: grafana/promtail:latest
-    restart: always
-    volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./promtail-config.yaml:/etc/promtail/config.yaml
-    command: -config.file=/etc/promtail/config.yaml
     networks:
       - monitoring
 

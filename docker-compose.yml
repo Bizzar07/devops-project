@@ -9,10 +9,11 @@ services:
     networks:
       - monitoring
     logging:
-      driver: "json-file"
+      driver: "loki"
       options:
-        max-size: "10m"
-        max-file: "3"
+        # Folosim localhost pentru că plugin-ul Docker de pe host trimite datele
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-batch-size: "400"
 
   prometheus:
     image: prom/prometheus
